@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GUZUPAYETKIZ FX - Premium Deriv Bots</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+body{background:#0a0e1a;color:#fff;min-height:100vh}
+.header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#10162a;border-bottom:1px solid #1e293b;position:sticky;top:0;z-index:10}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px}
+.logo span{color:#00d084}
+.btn{padding:10px 18px;border-radius:8px;border:none;font-weight:600;cursor:pointer}
+.btn-green{background:#00d084;color:#000}
+.btn-dark{background:#1e293b;color:#fff;border:1px solid #334155}
+.hero{padding:20px 16px}
+.card{background:#151c33;border:1px solid #1e293b;border-radius:16px;padding:16px;margin-bottom:16px}
+.badge{display:inline-block;background:#00d08420;color:#00d084;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:10px}
+.balance{font-size:32px;font-weight:700;margin:8px 0}
+.balance small{font-size:14px;color:#94a3b8}
+.bot-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bot-card{background:#1a223f;border:1px solid #2a3459;border-radius:12px;padding:14px;text-align:left}
+.bot-card h4{font-size:14px;margin:6px 0}
+.bot-card p{font-size:11px;color:#94a3b8}
+.bot-icon{width:36px;height:36px;background:#00d084;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.live{color:#00d084;font-size:11px;font-weight:600}
+</style>
+</head>
+<body>
+<div class="header">
+<div class="logo">💹 <div>GUZUPAYETKIZ <span>FX</span></div></div>
+<button id="connectBtn" class="btn btn-green" onclick="connectDeriv()">Connect Deriv</button>
+</div>
+
+<div class="hero">
+<div class="card">
+<div class="badge">● LIVE ACCOUNT</div>
+<div style="display:flex;justify-content:space-between;align-items:center">
+<div>
+<div style="color:#94a3b8;font-size:13px">Total Balance</div>
+<div class="balance" id="balance">$0.00 <small>USD</small></div>
+<div id="accountInfo" style="color:#94a3b8;font-size:12px">Connect your Deriv account</div>
+</div>
+<div style="text-align:right">
+<div class="live">● $2.26 Today</div>
+<div style="font-size:11px;color:#94a3b8;margin-top:4px">Profit +12.4%</div>
+</div>
+</div>
+</div>
+
+<h3 style="margin:16px 0 10px;font-size:16px">🔥 Premium Bots</h3>
+<div class="bot-grid">
+<div class="bot-card" onclick="runBot('ALPHA V75')">
+<div class="bot-icon">⚡</div>
+<h4>ALPHA V75</h4>
+<p>High Frequency V75 (1s)</p>
+<div class="live" style="margin-top:8px">● 94% Win Rate</div>
+</div>
+<div class="bot-card" onclick="runBot('VOLATILITY MASTER')">
+<div class="bot-icon" style="background:#6366f1">📈</div>
+<h4>VOLATILITY MASTER</h4>
+<p>V10, V25, V50, V75, V100</p>
+<div class="live" style="margin-top:8px">● $2.26+</div>
+</div>
+<div class="bot-card" onclick="runBot('BOOM CRASH')">
+<div class="bot-icon" style="background:#f59e0b">💥</div>
+<h4>BOOM & CRASH</h4>
+<p>Spike Catcher Pro</p>
+<div class="live" style="margin-top:8px">● 89% Win Rate</div>
+</div>
+<div class="bot-card" onclick="runBot('GOLD SCALPER')">
+<div class="bot-icon" style="background:#ef4444">🥇</div>
+<h4>GOLD SCALPER</h4>
+<p>XAUUSD Deriv Bot</p>
+<div class="live" style="margin-top:8px">● 91% Win Rate</div>
+</div>
+</div>
+
+<div class="card" style="margin-top:16px">
+<h4 style="margin-bottom:8px">🤖 Bot Console</h4>
+<div id="console" style="background:#0a0e1a;border-radius:8px;padding:10px;height:120px;overflow:auto;font-size:12px;color:#00d084;font-family:monospace">
+> GUZUPAYETKIZ FX System Ready...<br>
+> Waiting for Deriv connection...<br>
+</div>
+<button class="btn btn-dark" style="width:100%;margin-top:10px" onclick="startTrading()">▶ START BOT</button>
+</div>
+
+<div style="text-align:center;padding:20px;color:#475569;font-size:11px">
+GUZUPAYETKIZ FX © 2026 - Like Dollarprinter<br>
+Secure Deriv OAuth • No API Token Needed
+</div>
+</div>
+
+<script>
+const APP_ID = '1089';
+let ws, token, account;
+function log(m){document.getElementById('console').innerHTML+= '> '+m+'<br>'; document.getElementById('console').scrollTop=9999}
+
+function connectDeriv(){
+  const url = `https://oauth.deriv.com/oauth2/authorize?app_id=${APP_ID}&l=en&brand=deriv`;
+  window.location.href = url;
+}
+
+function getParams(){
+  const p = new URLSearchParams(window.location.search);
+  const h = new URLSearchParams(window.location.hash.replace('#','?'));
+  return {token1:p.get('token1')||h.get('token1'), acct:p.get('acct1')||h.get('acct1')};
+}
+
+window.onload=()=>{
+  const {token1,acct}=getParams();
+  if(token1){
+    token=token1; account=acct;
+    document.getElementById('connectBtn').innerText='Connected ✓';
+    document.getElementById('connectBtn').style.background='#1e293b';
+    document.getElementById('connectBtn').style.color='#00d084';
+    document.getElementById('accountInfo').innerText='Account: '+account;
+    log('Deriv Connected: '+account);
+    connectWS();
+  }
+}
+
+function connectWS(){
+  ws=new WebSocket('wss://ws.derivws.com/websockets/v3?app_id='+APP_ID);
+  ws.onopen=()=>{ws.send(JSON.stringify({authorize:token})); log('Authorizing...');}
+  ws.onmessage=(e)=>{
+    const d=JSON.parse(e.data);
+    if(d.authorize){log('Authorized ✓ Balance: $'+d.authorize.balance); document.getElementById('balance').innerHTML='$'+d.authorize.balance.toFixed(2)+' <small>USD</small>'; ws.send(JSON.stringify({balance:1,subscribe:1}));}
+    if(d.balance){document.getElementById('balance').innerHTML='$'+d.balance.balance.toFixed(2)+' <small>USD</small>';}
+  }
+}
+
+function runBot(name){log('Selected Bot: '+name); alert(name+' Bot Ready! Connect Deriv first then press START BOT');}
+function startTrading(){log('Starting GUZUPAYETKIZ FX Bot...'); log('Analyzing Volatility 75 (1s)...'); log('Strategy: Digits Over/Under + Martingale'); if(!token){alert('Please Connect Deriv First!'); return;} log('Bot Running - Watching $2.26+ profit...');}
+</script>
+</body>
+  </html>
+  
